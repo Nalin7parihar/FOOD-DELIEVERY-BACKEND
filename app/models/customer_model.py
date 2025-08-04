@@ -8,7 +8,7 @@ class Customer(User):
   id = Column(Integer,ForeignKey('users.id'),primary_key=True)
   name = Column(String,nullable=False,index=True)
   age = Column(Integer,nullable=False)
-  phone = Column(Integer,nullable=False)
+  phone = Column(String(20),nullable=False,unique=True)
   address = Column(String,nullable=False)
   state = Column(String,nullable=False)
   country = Column(String,nullable=False)
@@ -17,5 +17,7 @@ class Customer(User):
       'polymorphic_identity': UserRole.CUSTOMER,
   }
   
-  #Relationships  
+  #Relationships 
+  orders = relationship("Order", back_populates="customer")
+   
   

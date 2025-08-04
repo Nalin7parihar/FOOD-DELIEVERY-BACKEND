@@ -5,9 +5,19 @@ from sqlalchemy import pool
 
 from alembic import context
 from app.db.session import Base
+from app.models import user_model, customer_model, driver_model, restaurant_model, menu_model, order_model, orderitems_model
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+target_metadata = Base.metadata
+
+# Add this function to ignore the PostGIS table
+def include_object(object, name, type_, reflected, compare_to):
+    if type_ == "table" and name == "spatial_ref_sys":
+        return False
+    return True
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -18,7 +28,6 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -65,7 +74,10 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            # Add the include_object hook here
+            include_object=include_object
         )
 
         with context.begin_transaction():
